@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CALIBRE — Haute Horlogerie, rendered live</title>
+  <meta name="description" content="CALIBRE CAL-01 — a manufacture wristwatch disassembled layer by layer in real-time 3D. 28,800 vph, rendered on your GPU with WebGPU." />
+  <meta property="og:title" content="CALIBRE — Time, disassembled." />
+  <meta property="og:description" content="A mechanical calibre opened layer by layer in real-time 3D. WebGPU / Three.js." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Fragment+Mono&display=swap"
+    rel="stylesheet"
+  />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "CALIBRE CAL-01",
+    "brand": { "@type": "Brand", "name": "CALIBRE" },
+    "description": "Manufacture wristwatch, 40 mm 904L steel, in-house calibre, 28,800 vph."
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#story">Skip to content</a>
+
+  <canvas id="stage" aria-hidden="true"></canvas>
+
+  <!-- MAISON: telemetry như dòng khắc caseback, một dòng mảnh dưới đáy -->
+  <div class="engraving" aria-hidden="true">
+    <span id="hud-render">RENDER —</span>
+    <span class="engraving__sep">·</span>
+    <span><span id="hud-beat" class="beat"></span>28,800 VPH — 4 HZ</span>
+    <span class="engraving__sep">·</span>
+    <span id="hud-clock">00:00:00.000</span>
+  </div>
+
+  <div class="progress" aria-hidden="true"><div class="progress__bar" id="progress-bar"></div></div>
+
+  <header class="nav">
+    <span class="nav__logo">Calibre</span>
+    <nav aria-label="Main">
+      <a href="#story">Movement</a>
+      <a href="#collection">Collection</a>
+      <a href="#collection">Configure</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="Introduction">
+      <p class="eyebrow">CALIBRE ATELIER — REF. CAL-01</p>
+      <h1>Time, <em>disassembled.</em></h1>
+      <p class="hero__sub">
+        An in-house mechanical calibre, rendered live on your GPU.
+        Every reflection is computed — nothing here is a photograph.
+      </p>
+      <p class="hero__scroll">Scroll to open the instrument</p>
+    </section>
+
+    <section class="story" id="story" aria-label="The watch, layer by layer">
+      <div class="story__step">
+        <div class="card">
+          <p class="card__no">REF. 01 — SAPPHIRE CRYSTAL</p>
+          <h2>The only thing between you and the <em>mechanism</em></h2>
+          <p>Domed sapphire, 1.2&nbsp;mm, anti-reflective on both faces.
+             Refractive index 1.77 — simulated, not photographed.</p>
+        </div>
+      </div>
+      <div class="story__step story__step--right">
+        <div class="card">
+          <p class="card__no">REF. 02 — HANDS</p>
+          <h2>Eight steps <em>per second</em></h2>
+          <p>Dauphine hands in mirror-polished steel. The seconds hand
+             does not glide — it beats 8 times a second, exactly like
+             the escapement below it. Watch closely.</p>
+        </div>
+      </div>
+      <div class="story__step">
+        <div class="card">
+          <p class="card__no">REF. 03 — DIAL</p>
+          <h2>Galvanic <em>black</em></h2>
+          <p>Applied indices, set by hand. No printing except the
+             signature — restraint is the whole point.</p>
+        </div>
+      </div>
+      <div class="story__step story__step--right">
+        <div class="card">
+          <p class="card__no">REF. 04 — MOVEMENT CAL.01</p>
+          <h2>28,800 vibrations <em>per hour</em></h2>
+          <p>Manufacture calibre. 41 jewels, 72&nbsp;h power reserve.
+             The balance wheel you see is oscillating at a true 4&nbsp;Hz —
+             tied to the same clock as the engraving below.</p>
+        </div>
+      </div>
+      <div class="story__step">
+        <div class="card">
+          <p class="card__no">REF. 05 — CASE</p>
+          <h2>904L, <em>Ø 40 mm</em></h2>
+          <p>Brushed and polished in alternating passes. The anisotropic
+             grain you see in the highlights is real material response,
+             not a texture.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="outro light" id="collection" aria-label="Collection preview">
+      <div class="minute-track" aria-hidden="true"></div>
+      <p class="eyebrow">NEXT — THE COLLECTION</p>
+      <h2>Three references.<br /><em>One calibre.</em></h2>
+      <p class="outro__sub">Collection, configurator and AR try-on are being assembled in this atelier.</p>
+    </section>
+  </main>
+
+  <footer class="footer light">
+    <span>CALIBRE — MAISON CONCEPT</span>
+    <span>RENDERED IN REAL TIME — NO PHOTOGRAPHY</span>
+  </footer>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

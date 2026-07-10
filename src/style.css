@@ -1,0 +1,238 @@
+/* ── MAISON tokens (dialect của CALIBRE) ─────────────────── */
+:root {
+  --anthracite: #0f0e0c;
+  --ivory: #efeae1;
+  --ink: #ece7db;          /* chữ trên nền tối */
+  --ink-light: #1c1a17;    /* chữ trên nền ivory */
+  --muted: #938d7f;        /* AA trên anthracite */
+  --muted-light: #6d675c;  /* AA trên ivory */
+  --line: rgba(236, 231, 219, 0.16);
+  --line-light: rgba(28, 26, 23, 0.18);
+  --accent: #c8a24b;       /* champagne gold — duy nhất */
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "Fragment Mono", ui-monospace, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* KHÔNG dùng scroll-behavior: smooth — Lenis đảm nhiệm smooth scroll,
+   hai hệ thống chạy song song sẽ tranh quyền điều khiển scroll */
+
+body {
+  background: var(--anthracite);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--accent); color: var(--anthracite); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.skip {
+  position: fixed; top: -100%; left: 16px; z-index: 100;
+  background: var(--anthracite); color: var(--ink);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  padding: 10px 16px; border: 1px solid var(--line); text-decoration: none;
+  transition: top 0.15s;
+}
+.skip:focus { top: 16px; }
+
+/* ── Canvas stage ────────────────────────────────────────── */
+#stage {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  display: block; z-index: 0;
+}
+
+/* ── Engraving: telemetry như dòng khắc caseback ─────────── */
+.engraving {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+  display: flex; justify-content: center; align-items: center;
+  gap: 14px; flex-wrap: wrap;
+  padding: 14px 24px;
+  pointer-events: none;
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.engraving__sep { color: var(--accent); }
+
+.beat {
+  display: inline-block; width: 5px; height: 5px; margin-right: 9px;
+  background: var(--accent); border-radius: 50%; vertical-align: 1px;
+}
+
+/* ── Progress line 2px ───────────────────────────────────── */
+.progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 30; }
+.progress__bar {
+  height: 100%; width: 100%; background: var(--accent);
+  transform: scaleX(0); transform-origin: left center;
+}
+
+/* ── Nav — trục maison ───────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 25;
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 30px 64px 0;
+}
+.nav__logo {
+  font-family: var(--font-display); font-size: 1.5rem;
+  letter-spacing: 0.04em; color: var(--ink);
+}
+.nav a {
+  font-family: var(--font-body); font-size: 12px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  margin-left: 30px; padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav a:hover { color: var(--ink); border-color: var(--accent); }
+
+/* ── Typography ──────────────────────────────────────────── */
+.eyebrow {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 26px;
+}
+
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 400; line-height: 1.04;
+  letter-spacing: 0.005em;
+}
+h1 em, h2 em { font-style: italic; color: var(--accent); }
+
+/* ── Hero ────────────────────────────────────────────────── */
+.hero {
+  position: relative; z-index: 10;
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 64px; max-width: 1020px;
+  pointer-events: none;
+}
+.hero h1 { font-size: clamp(3.6rem, 10vw, 8.5rem); }
+.hero__sub {
+  margin-top: 30px; max-width: 430px;
+  color: var(--muted); font-size: 1.05rem;
+}
+.hero__scroll {
+  position: absolute; bottom: 64px; left: 64px;
+  font-family: var(--font-body); font-size: 11px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); padding-left: 28px;
+}
+.hero__scroll::before {
+  content: ""; position: absolute; left: 0; top: 50%;
+  width: 18px; height: 1px; background: var(--accent);
+}
+
+/* ── Story: exploded movement ────────────────────────────── */
+.story { position: relative; z-index: 10; }
+
+.story__step {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding: 0 64px;
+}
+.story__step--right { justify-content: flex-end; }
+
+.card {
+  max-width: 380px;
+  background: color-mix(in srgb, var(--anthracite) 66%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  padding: 26px 34px 36px;
+}
+/* minute track — vành chia phút trên đầu card, thay corner ticks */
+.card::before {
+  content: ""; display: block; height: 7px; margin-bottom: 22px;
+  background:
+    repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 9px) left bottom / 100% 5px no-repeat,
+    linear-gradient(var(--line), var(--line)) left top / 100% 1px no-repeat;
+}
+.card__no {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.2em; color: var(--accent);
+  margin-bottom: 16px;
+}
+.card h2 { font-size: 1.9rem; margin-bottom: 14px; }
+.card p:not(.card__no) { color: var(--muted); font-size: 0.96rem; }
+
+/* Reveal bằng CSS scroll-driven animation — off-main-thread */
+@supports (animation-timeline: view()) {
+  .card {
+    animation: card-reveal both linear;
+    animation-timeline: view();
+    animation-range: entry 15% cover 38%;
+  }
+  @keyframes card-reveal {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+/* ── Polarity ivory: chương editorial ────────────────────── */
+.light {
+  background: var(--ivory);
+  color: var(--ink-light);
+}
+.light .eyebrow { color: color-mix(in srgb, var(--accent) 78%, var(--ink-light)); }
+.light h2 em { color: color-mix(in srgb, var(--accent) 78%, var(--ink-light)); }
+
+/* nav/engraving đổi mực khi nằm trên chương ivory (toggle bằng JS) */
+.nav, .engraving { transition: color 0.25s; }
+.nav__logo, .nav a { transition: color 0.25s, border-color 0.2s; }
+body.nav-on-light .nav__logo { color: var(--ink-light); }
+body.nav-on-light .nav a { color: var(--muted-light); }
+body.nav-on-light .nav a:hover { color: var(--ink-light); }
+body.engraving-on-light .engraving { color: var(--muted-light); }
+
+.minute-track {
+  position: absolute; top: 0; left: 0; right: 0; height: 8px;
+  background:
+    repeating-linear-gradient(90deg, var(--line-light) 0 1px, transparent 1px 10px) left bottom / 100% 6px no-repeat,
+    linear-gradient(var(--line-light), var(--line-light)) left top / 100% 1px no-repeat;
+}
+
+.outro {
+  position: relative; z-index: 10;
+  min-height: 88vh;
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; text-align: center;
+  padding: 96px 64px;
+}
+.outro h2 { font-size: clamp(2.8rem, 7vw, 5.4rem); }
+.outro__sub { margin-top: 26px; max-width: 440px; color: var(--muted-light); }
+
+.footer {
+  position: relative; z-index: 10;
+  display: flex; justify-content: space-between; gap: 16px;
+  padding: 24px 64px 72px;
+  border-top: 1px solid var(--line-light);
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted-light);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .nav { padding: 24px 24px 0; }
+  .nav a { margin-left: 14px; font-size: 10px; }
+  .hero, .story__step { padding-left: 24px; padding-right: 24px; }
+  .outro { padding: 72px 24px; }
+  .hero__scroll { left: 24px; bottom: 56px; }
+  .engraving { gap: 10px; padding: 10px 16px; }
+  .footer { flex-direction: column; padding: 22px 24px 48px; }
+  .card { max-width: 100%; }
+}
+
+/* ── Reduced motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .card { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
