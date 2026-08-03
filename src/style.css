@@ -130,6 +130,13 @@ h1 em, h2 em { font-style: italic; color: var(--accent); }
   content: ""; position: absolute; left: 0; top: 50%;
   width: 18px; height: 1px; background: var(--accent);
 }
+.hero__scroll-sep { margin: 0 10px; color: var(--accent); }
+
+/* ── Drag-to-rotate ──────────────────────────────────────── */
+/* pan-y: trình duyệt giữ scroll dọc, nhường kéo ngang cho spin */
+body { touch-action: pan-y pinch-zoom; }
+html.is-grabbing, html.is-grabbing * { cursor: grabbing !important; }
+html.is-grabbing { user-select: none; -webkit-user-select: none; }
 
 /* ── Story: exploded movement ────────────────────────────── */
 .story { position: relative; z-index: 10; }

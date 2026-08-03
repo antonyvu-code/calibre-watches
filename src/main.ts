@@ -6,6 +6,8 @@ import Lenis from 'lenis';
 import { buildWatch } from './watch';
 import { makeStudioEnvironment } from './environment';
 import { mechanicalTick, type TickFn } from './tick';
+import { createSpin } from './spin';
+import { createExplode } from './explode';
 
 // mechanicalTick tự fallback về linear khi chưa được implement (tick.ts)
 const PROGRESS_TICK: TickFn = mechanicalTick;
@@ -108,10 +110,18 @@ async function boot(): Promise<void> {
   camera.lookAt(0, 0.4, 0);
 
   const watch = buildWatch();
+  // Pivot: drag spin xoay pivot quanh trục Y thế giới (turntable),
+  // GSAP giữ orientation/intro của watch.group bên trong — hai hệ
+  // ghi vào hai node khác nhau nên scrub không đè lên drag.
+  const pivot = new THREE.Group();
+  pivot.position.set(1.6, 0.35, 0);
+  scene.add(pivot);
+
   // Pose hero: mặt số hướng về camera, nghiêng nhẹ như macro shot
   watch.group.rotation.set(Math.PI / 2 - 0.38, 0.05, -0.16);
-  watch.group.position.set(1.6, 0.35, 0);
-  scene.add(watch.group);
+  pivot.add(watch.group);
+
+  const spin = createSpin(reducedMotion);
 
   /* Intro (không phụ thuộc scroll) */
   if (!reducedMotion) {
@@ -119,22 +129,16 @@ async function boot(): Promise<void> {
     gsap.from(watch.group.rotation, { y: 0.9, duration: 1.6, ease: 'power2.out' });
   }
 
-  /* Exploded Movement — scrub theo #story */
+  /* Exploded Movement — timeline paused làm "pose function" thuần:
+     progress 0..1 → tư thế. KHÔNG tự chạy; giá trị explode hội tụ
+     từ scroll + drag (explode.ts) là nơi duy nhất lái nó. */
   const layers = watch.layers;
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: '#story',
-      start: 'top bottom',
-      end: 'bottom bottom',
-      scrub: reducedMotion ? true : 0.7,
-    },
-    defaults: { ease: 'none' },
-  });
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
 
   tl
     // vào story: đồng hồ về giữa, ngửa mặt lên để explode dọc màn hình
     .to(watch.group.rotation, { x: 0.42, y: 0.85, z: 0, duration: 1.2 }, 0)
-    .to(watch.group.position, { x: 0, y: -0.4, duration: 1.2 }, 0)
+    .to(pivot.position, { x: 0, y: -0.4, duration: 1.2 }, 0)
     .to(camera.position, { y: 2.6, z: 12.5, duration: 1.2 }, 0)
     // tháo rời theo thứ tự câu chuyện: glass → hands → dial → movement/case
     .to(layers.glass.position, { y: layers.glass.userData.explode, duration: 0.9 }, 0.9)
@@ -145,6 +149,17 @@ async function boot(): Promise<void> {
     // giữ pose mở + xoay chậm để ngắm
     .to(watch.group.rotation, { y: 1.7, duration: 1.4 }, 3.6)
     .to({}, { duration: 0.4 });
+
+  /* Hai nguồn input → một giá trị explode (pattern Trionn):
+     scroll báo progress qua setScroll, drag dọc cộng boost bên trong
+     explode.ts — render loop áp kết quả hội tụ vào tl.progress. */
+  const explode = createExplode(reducedMotion);
+  ScrollTrigger.create({
+    trigger: '#story',
+    start: 'top bottom',
+    end: 'bottom bottom',
+    onUpdate: (self) => explode.setScroll(self.progress),
+  });
 
   /* Resize — màn hình dọc hẹp thì thu đồng hồ lại cho đủ khung */
   const fit = () => {
@@ -159,9 +174,26 @@ async function boot(): Promise<void> {
   /* Render loop — delta time, kèm telemetry */
   let fpsFrames = 0;
   let fpsLast = performance.now();
+  let prevMs = 0;
+  let lastExplodeP = -1;
 
   renderer.setAnimationLoop((timeMs: number) => {
     const t = timeMs / 1000;
+    // dt cap 100ms — tab bị throttle quay lại không làm đồng hồ "quăng" xa
+    const dt = Math.min(0.1, (timeMs - prevMs) / 1000);
+    prevMs = timeMs;
+
+    spin.update(dt);
+    pivot.rotation.y = spin.angle;
+
+    // chỉ render timeline khi giá trị ĐỔI — đứng yên ở hero thì
+    // tl.progress(0) không được gọi lặp, để intro tween không bị đè
+    explode.update(dt);
+    if (explode.progress !== lastExplodeP) {
+      tl.progress(explode.progress);
+      lastExplodeP = explode.progress;
+    }
+
     watch.update(t, reducedMotion);
 
     // đồng hồ HUD: giờ thật đến ms — cùng nguồn thời gian với kim 3D
